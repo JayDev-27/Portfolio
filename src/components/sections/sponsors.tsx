@@ -92,7 +92,7 @@ export function SponsorWall({ sponsors, live }: { sponsors: Sponsor[]; live: boo
       </div>
       <p className="mt-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-faint">
         <span className={`h-1.5 w-1.5 ${live ? "live-dot bg-green-400" : "bg-faint"}`} />
-        {live ? "Live from GitHub Sponsors · updates when someone sponsors" : "Cached list · live updates turn on once the GitHub token is set"}
+        {live ? "Live from GitHub Sponsors · updates when someone sponsors" : "Cached list · GitHub could not be reached just now"}
       </p>
     </div>
   );

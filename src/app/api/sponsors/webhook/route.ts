@@ -11,14 +11,16 @@ export async function POST(request: Request) {
   const secret = process.env.SPONSORS_WEBHOOK_SECRET;
   const body = await request.text();
 
-  if (!secret) return Response.json({ ok: false, error: "Webhook secret not configured" }, { status: 500 });
-
+  // The webhook only triggers a refetch from GitHub, so a secret is optional.
+  // When SPONSORS_WEBHOOK_SECRET is set, the signature is enforced.
+  if (secret) {
   const signature = request.headers.get("x-hub-signature-256") ?? "";
   const expected = "sha256=" + createHmac("sha256", secret).update(body).digest("hex");
   const a = Buffer.from(signature);
   const b = Buffer.from(expected);
   if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return Response.json({ ok: false, error: "Bad signature" }, { status: 401 });
+  }
   }
 
   const event = request.headers.get("x-github-event");

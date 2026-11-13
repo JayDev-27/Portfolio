@@ -60,7 +60,29 @@ export async function getSponsors(): Promise<{ sponsors: Sponsor[]; live: boolea
       ... on Organization{ login name avatarUrl(size:160) url } } } } }`,
     { login: LOGIN },
   );
-  if (!data?.user) return { sponsors: fallbackSponsors, live: false };
+  if (!data?.user) {
+    // Tokenless: read the public GitHub Sponsors page.
+    try {
+      const res = await fetch(`https://github.com/sponsors/${LOGIN}`, { headers: { "User-Agent": "portfolio" } });
+      if (res.ok) {
+        const html = await res.text();
+        const logins = [...new Set([...html.matchAll(/alt="@([A-Za-z0-9-]+)"/g)].map((m) => m[1]))].filter(
+          (l) => l.toLowerCase() !== LOGIN.toLowerCase(),
+        );
+        const known = Object.fromEntries(fallbackSponsors.map((f) => [f.login, f.name]));
+        return {
+          sponsors: logins.map((login) => ({
+            login,
+            name: known[login] ?? null,
+            avatarUrl: `https://avatars.githubusercontent.com/${login}?s=160`,
+            url: `https://github.com/${login}`,
+          })),
+          live: true,
+        };
+      }
+    } catch {}
+    return { sponsors: fallbackSponsors, live: false };
+  }
   return { sponsors: data.user.sponsors.nodes.filter((n) => n?.login), live: true };
 }
 
