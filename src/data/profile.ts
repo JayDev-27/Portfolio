@@ -31,11 +31,13 @@ export type Project = {
   category: Category;
   stack: string[];
   live?: string;
+  image?: string;
 };
 
 export const projects: Project[] = [
   {
     repo: "Synthid-remover",
+    image: "/projects/Synthid-remover.jpg",
     name: "SynthID Remover",
     blurb: "Strips AI watermarks, C2PA Content Credentials and SynthID frequency signals — 100% on your machine.",
     category: "Security",
@@ -43,6 +45,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Beatrice-voicechanger-windows",
+    image: "/projects/Beatrice-voicechanger-windows.jpg",
     name: "Project Beatrice",
     blurb: "Real-time AI voice changer: 112 voices, ~10 ms latency, fully on-device, for Windows and macOS.",
     category: "Real-time Audio",
@@ -51,6 +54,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Brawlverse",
+    image: "/projects/Brawlverse.jpg",
     name: "Brawlverse",
     blurb: "A 3D web brawler built with Three.js, Blender MCP and Tripo 3D assets, with cinematic cutscenes.",
     category: "Web & 3D",
@@ -66,6 +70,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Jarvis",
+    image: "/projects/Jarvis.jpg",
     name: "Jarvis",
     blurb: "A holographic Three.js assistant with voice cloning, TTS and real macOS system actions.",
     category: "AI & Agents",
@@ -73,6 +78,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Vantage",
+    image: "/projects/Vantage.jpg",
     name: "Vantage",
     blurb: "Fast, free live wallpapers for macOS that render beneath your desktop icons.",
     category: "Native & Desktop",
@@ -80,6 +86,7 @@ export const projects: Project[] = [
   },
   {
     repo: "OpenBot",
+    image: "/projects/OpenBot.jpg",
     name: "OpenBot",
     blurb: "Open-source AI teammates, each with its own sandboxed computer. Runs 100% locally with Ollama.",
     category: "AI & Agents",
@@ -94,6 +101,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Frontend-Library",
+    image: "/projects/Frontend-Library.jpg",
     name: "Frontend Library",
     blurb: "14,500+ curated frontend assets — components, motion, fonts and templates — with live previews.",
     category: "Web & 3D",
@@ -102,6 +110,7 @@ export const projects: Project[] = [
   },
   {
     repo: "MangaDock",
+    image: "/projects/MangaDock.jpg",
     name: "MangaDock",
     blurb: "A free, ad-free, open-source reader for manga, manhwa and manhua.",
     category: "Native & Desktop",
@@ -110,6 +119,7 @@ export const projects: Project[] = [
   },
   {
     repo: "FloodSetu",
+    image: "/projects/FloodSetu.jpg",
     name: "FloodSetu",
     blurb: "Multi-agent flood rescue dispatch with Contract-Net auctions, offline SOS and a tamper-evident relief ledger.",
     category: "AI & Agents",
@@ -118,6 +128,7 @@ export const projects: Project[] = [
   },
   {
     repo: "RVC-Voicechanger",
+    image: "/projects/RVC-Voicechanger.jpg",
     name: "RVC Voice Changer",
     blurb: "A desktop voice changer using retrieval-based voice conversion and a Spotify Pedalboard DSP chain.",
     category: "Real-time Audio",
@@ -171,13 +182,13 @@ export const journey = [
 ];
 
 export const certifications = [
-  { name: "Model Context Protocol: Advanced Topics", issuer: "Anthropic" },
-  { name: "Claude 101", issuer: "Anthropic" },
-  { name: "AI Foundations", issuer: "OpenAI" },
-  { name: "AI Fundamentals", issuer: "IBM SkillsBuild" },
-  { name: "Web Development Fundamentals", issuer: "IBM SkillsBuild" },
-  { name: "Google Analytics", issuer: "Google" },
-  { name: "Intro to Programming with Python", issuer: "Kaggle" },
+  { name: "Model Context Protocol: Advanced Topics", issuer: "Anthropic", logo: "/logos/anthropic.svg" },
+  { name: "Claude 101", issuer: "Anthropic", logo: "/logos/anthropic.svg" },
+  { name: "AI Foundations", issuer: "OpenAI", logo: "/logos/openai.svg" },
+  { name: "AI Fundamentals", issuer: "IBM SkillsBuild", logo: "/logos/ibm.jpg" },
+  { name: "Web Development Fundamentals", issuer: "IBM SkillsBuild", logo: "/logos/ibm.jpg" },
+  { name: "Google Analytics", issuer: "Google", logo: "/logos/googleanalytics.svg" },
+  { name: "Intro to Programming with Python", issuer: "Kaggle", logo: "/logos/kaggle.svg" },
 ];
 
 export const skills: Record<string, string[]> = {

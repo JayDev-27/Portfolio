@@ -10,7 +10,7 @@ const CATS: ("All" | Category)[] = ["All", "AI & Agents", "Native & Desktop", "R
 export function Projects({ projects, stars }: { projects: Project[]; stars: Record<string, number> }) {
   const [cat, setCat] = useState<(typeof CATS)[number]>("All");
   const [showAll, setShowAll] = useState(false);
-  const list = useMemo(() => projects.filter((p) => cat === "All" || p.category === cat), [projects, cat]);
+  const list = useMemo(() => projects.filter((p) => cat === "All" || p.category === cat).sort((a, b) => Number(!a.image) - Number(!b.image)), [projects, cat]);
   const visible = showAll || cat !== "All" ? list : list.slice(0, 6);
 
   return (
@@ -61,15 +61,18 @@ function ProjectCard({ p, stars }: { p: Project; stars?: number }) {
   return (
     <a href={p.live ?? repoUrl} target="_blank" rel="noreferrer" className="group block p-4 sm:p-5" data-cursor={p.live ? "visit" : "repo"}>
       <div className="relative aspect-[2/1] overflow-hidden border border-line bg-bg-2">
-        {/* GitHub's generated social card for the repo, pixelated until hover. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`https://opengraph.githubassets.com/portfolio/${profile.handle}/${p.repo}`}
-          alt={`${p.name} preview`}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover opacity-80 grayscale transition-all duration-500 group-hover:scale-[1.03] group-hover:opacity-100 group-hover:grayscale-0"
-        />
-        <PixelCurtain />
+        {p.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={p.image}
+            alt={`${p.name} screenshot`}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        ) : (
+          <PixelCover name={p.name} category={p.category} />
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-bg/50 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <div className="absolute left-2 top-2 flex gap-1">
           {p.live && (
             <span className="flex items-center gap-1 bg-bg/90 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-green-400">
@@ -100,20 +103,13 @@ function ProjectCard({ p, stars }: { p: Project; stars?: number }) {
   );
 }
 
-const CURTAIN = Array.from({ length: 48 }, (_, i) => ((i * 37 + 11) % 48) / 48);
-
-/** A grid of blocks over the image that dissolve in a random order on hover. */
-function PixelCurtain() {
-  const order = CURTAIN;
+/** Cover for projects without a screenshot: the name set in pixels over a dot field. */
+function PixelCover({ name, category }: { name: string; category: string }) {
   return (
-    <div className="pointer-events-none absolute inset-0 grid grid-cols-12 grid-rows-4">
-      {order.map((o, i) => (
-        <span
-          key={i}
-          className="bg-bg-2 opacity-60 transition-opacity duration-200 group-hover:opacity-0"
-          style={{ transitionDelay: `${Math.round(o * 260)}ms` }}
-        />
-      ))}
+    <div className="absolute inset-0 flex flex-col justify-end bg-[radial-gradient(circle_at_75%_30%,rgb(var(--glow)/0.35),transparent_55%)] p-4 transition-transform duration-700 group-hover:scale-[1.04]">
+      <div className="absolute inset-0 opacity-40 [background-image:radial-gradient(var(--line-2)_1px,transparent_1px)] [background-size:10px_10px]" />
+      <span className="relative font-mono text-[10px] uppercase tracking-[0.3em] text-accent">{category}</span>
+      <span className="relative font-pixel text-4xl leading-none text-fg sm:text-5xl">{name}</span>
     </div>
   );
 }

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Jatin Pandey — AI & Full-Stack Developer",
     description: "Building things, breaking things, and occasionally fixing them.",
-    images: ["/img/me-48-preview.png"],
+    images: ["/img/avatar.png"],
   },
   twitter: { card: "summary", creator: "@JayDevSG" },
 };

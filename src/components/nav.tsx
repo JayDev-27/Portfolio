@@ -46,7 +46,7 @@ export function Nav() {
       >
         <a href="#top" className="flex items-center gap-2.5" data-cursor="home">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/img/me-32.png" alt="" width={28} height={28} className="pixelated h-7 w-7 bg-line" />
+          <img src="/img/avatar-64.png" alt="" width={28} height={28} className="pixelated h-7 w-7 bg-line" />
           <span className="font-pixel text-sm tracking-wide">satiricalguru</span>
         </a>
         <nav className="flex items-center gap-1">

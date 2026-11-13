@@ -27,7 +27,7 @@ export default function Home() {
           </Suspense>
         </Section>
 
-        <Section index="01b · Flow" title="The river" kicker="A year of commits as a current. Move over it and the koi scatter.">
+        <Section index="01b · Flow" title="The river" kicker="Where my commits went this year. Hover a lane for weekly detail.">
           <Suspense fallback={<Placeholder h={300} />}>
             <RiverData />
           </Suspense>
@@ -43,7 +43,7 @@ export default function Home() {
           <Journey />
         </Section>
 
-        <Section id="open-source" index="04 · Open source" title="Merged upstream" kicker="Pull requests merged into other people's projects.">
+        <Section id="open-source" index="04 · Open source" title="Merged upstream" kicker="Merged pull requests in well-known projects (1k+ stars).">
           <Suspense fallback={<Placeholder h={300} />}>
             <PRData />
           </Suspense>
@@ -108,8 +108,8 @@ async function ProjectsData() {
 }
 
 async function PRData() {
-  const prs = await getUpstreamPRs();
-  return <OpenSource prs={prs} />;
+  const repos = await getUpstreamPRs();
+  return <OpenSource repos={repos} />;
 }
 
 async function SponsorData() {

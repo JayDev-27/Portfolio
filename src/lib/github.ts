@@ -174,32 +174,53 @@ export async function getRepos(): Promise<{
   return { repos, totalStars, publicRepos: user?.public_repos ?? 81, followers: user?.followers ?? 61, latest };
 }
 
-export type PR = { title: string; repo: string; number: number; url: string; mergedAt: string };
+export type PR = { title: string; number: number; url: string; mergedAt: string };
+export type UpstreamRepo = { repo: string; owner: string; stars: number; description: string | null; logo: string; prs: PR[] };
 
-/** Merged pull requests to repositories I don't own. */
-export async function getUpstreamPRs(): Promise<PR[]> {
+// Repos GitHub search sometimes misses; always checked in addition to the search.
+const EXTRA_UPSTREAM = ["corsairdev/corsair", "NousResearch/hermes-agent", "astral-sh/ty"];
+const MIN_STARS = 1000;
+
+/** Merged PRs into well-known repositories I don't own (1k+ stars), grouped by repo. */
+export async function getUpstreamPRs(): Promise<UpstreamRepo[]> {
   "use cache";
   cacheTag("github");
   cacheLife("hours");
 
-  type S = { items: { title: string; number: number; html_url: string; repository_url: string; pull_request: { merged_at: string | null } }[] };
-  const q = encodeURIComponent(`author:${LOGIN} is:pr is:merged -user:${LOGIN}`);
-  const data = await rest<S>(`/search/issues?q=${q}&sort=updated&order=desc&per_page=40`);
-  const items = (data?.items ?? []).map((i) => ({
-    title: i.title,
-    number: i.number,
-    url: i.html_url,
-    repo: i.repository_url.replace("https://api.github.com/repos/", ""),
-    mergedAt: i.pull_request.merged_at ?? "",
-  }));
-  // Keep the list varied: at most 3 PRs per repository.
-  const perRepo: Record<string, number> = {};
-  return items
-    .filter((p) => {
-      perRepo[p.repo] = (perRepo[p.repo] ?? 0) + 1;
-      return perRepo[p.repo] <= 3;
-    })
-    .slice(0, 10);
+  type Item = { title: string; number: number; html_url: string; repository_url: string; pull_request: { merged_at: string | null } };
+  type S = { items: Item[] };
+  const search = (q: string) => rest<S>(`/search/issues?q=${encodeURIComponent(q)}&sort=updated&order=desc&per_page=100`);
+
+  const base = `author:${LOGIN} is:pr is:merged -user:${LOGIN}`;
+  const results = await Promise.all([search(base), ...EXTRA_UPSTREAM.map((r) => search(`${base} repo:${r}`))]);
+  const byRepo = new Map<string, PR[]>();
+  for (const res of results) {
+    for (const i of res?.items ?? []) {
+      const repo = i.repository_url.replace("https://api.github.com/repos/", "");
+      const list = byRepo.get(repo) ?? [];
+      if (!list.some((p) => p.number === i.number)) {
+        list.push({ title: i.title, number: i.number, url: i.html_url, mergedAt: i.pull_request.merged_at ?? "" });
+      }
+      byRepo.set(repo, list);
+    }
+  }
+
+  type R = { stargazers_count: number; description: string | null; owner: { login: string; avatar_url: string } };
+  const repos = await Promise.all(
+    [...byRepo.keys()].map(async (repo) => {
+      const info = await rest<R>(`/repos/${repo}`);
+      if (!info || info.stargazers_count < MIN_STARS) return null;
+      return {
+        repo,
+        owner: info.owner.login,
+        stars: info.stargazers_count,
+        description: info.description,
+        logo: `${info.owner.avatar_url}${info.owner.avatar_url.includes("?") ? "&" : "?"}s=96`,
+        prs: byRepo.get(repo)!.sort((a, b) => b.mergedAt.localeCompare(a.mergedAt)),
+      } satisfies UpstreamRepo;
+    }),
+  );
+  return repos.filter((r): r is UpstreamRepo => !!r).sort((a, b) => b.stars - a.stars);
 }
 
 export type LeetCodeStats = { solved: number; easy: number; medium: number; hard: number; totals: Record<string, number>; ranking: number };
