@@ -61,7 +61,19 @@ function ProjectCard({ p, stars }: { p: Project; stars?: number }) {
   return (
     <a href={p.live ?? repoUrl} target="_blank" rel="noreferrer" className="group block p-4 sm:p-5" data-cursor={p.live ? "visit" : "repo"}>
       <div className="relative aspect-[2/1] overflow-hidden border border-line bg-bg-2">
-        {p.image ? (
+        {p.video ? (
+          <video
+            src={p.video}
+            poster={p.image}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-label={`${p.name} demo`}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+          />
+        ) : p.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={p.image}

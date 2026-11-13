@@ -32,6 +32,7 @@ export type Project = {
   stack: string[];
   live?: string;
   image?: string;
+  video?: string;
 };
 
 export const projects: Project[] = [
@@ -46,6 +47,7 @@ export const projects: Project[] = [
   {
     repo: "Beatrice-voicechanger-windows",
     image: "/projects/Beatrice-voicechanger-windows.jpg",
+    video: "/projects/Beatrice-voicechanger-windows.mp4",
     name: "Project Beatrice",
     blurb: "Real-time AI voice changer: 112 voices, ~10 ms latency, fully on-device, for Windows and macOS.",
     category: "Real-time Audio",
@@ -55,6 +57,7 @@ export const projects: Project[] = [
   {
     repo: "Brawlverse",
     image: "/projects/Brawlverse.jpg",
+    video: "/projects/Brawlverse.mp4",
     name: "Brawlverse",
     blurb: "A 3D web brawler built with Three.js, Blender MCP and Tripo 3D assets, with cinematic cutscenes.",
     category: "Web & 3D",
