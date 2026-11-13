@@ -1,5 +1,4 @@
 import { PixelName } from "../hero/pixel-name";
-import { PixelPortrait } from "../hero/pixel-portrait";
 import { Magnetic } from "../ui/motion";
 import { RoleTicker, CopyEmail, TimeAgo } from "./hero-client";
 import { profile } from "@/data/profile";
@@ -31,12 +30,17 @@ export function Intro({ latest }: { latest: RepoInfo | null }) {
     <section className="rail tick mx-auto max-w-3xl border-t border-line">
       <div className="grid gap-8 px-4 py-10 sm:grid-cols-[200px_1fr] sm:px-6">
         <div className="relative mx-auto w-48 sm:w-full">
-          <div className="relative border border-line bg-bg-2 p-2">
-            <PixelPortrait />
-            <span className="absolute -bottom-px -right-px bg-accent px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-widest text-white">
-              hover me
-            </span>
+          <div className="group relative aspect-square overflow-hidden rounded-full border border-line-2 bg-bg-2 p-1.5 transition-colors duration-300 hover:border-accent">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/img/avatar.png"
+              alt="Pixel-art portrait of Jatin Pandey"
+              width={480}
+              height={480}
+              className="pixelated h-full w-full rounded-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
           </div>
+          <span className="live-dot absolute bottom-[12%] right-[12%] h-3.5 w-3.5 rounded-full border-2 border-bg bg-green-400" title={profile.status} />
         </div>
         <div className="flex flex-col justify-center">
           <h1 className="font-pixel text-3xl tracking-tight sm:text-4xl">{profile.name}</h1>
