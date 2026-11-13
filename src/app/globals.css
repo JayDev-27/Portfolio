@@ -1,0 +1,172 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root,
+:root[data-theme="dark"] {
+  --bg: #080606;
+  --bg-2: #0f0c0c;
+  --panel: #131010;
+  --line: #241e1d;
+  --line-2: #342b2a;
+  --fg: #ede7df;
+  --muted: #9a918a;
+  --faint: #5f5753;
+  --accent: #e0263f;
+  --accent-2: #ff5a6e;
+  --accent-ink: #fff3f4;
+  --dot: #2a2221;
+  --glow: 224 38 63;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --bg: #f4efe8;
+  --bg-2: #ece6dd;
+  --panel: #fbf8f4;
+  --line: #ddd4c9;
+  --line-2: #cbbfb2;
+  --fg: #1b1514;
+  --muted: #6b605a;
+  --faint: #a0958d;
+  --accent: #c41226;
+  --accent-2: #e0263f;
+  --accent-ink: #fff3f4;
+  --dot: #d8cec3;
+  --glow: 196 18 38;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-pixel: var(--font-pixelify), var(--font-geist-mono), monospace;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+/* Hide the native cursor only when the custom cursor is active (fine pointers). */
+@media (pointer: fine) {
+  html.has-cursor,
+  html.has-cursor * {
+    cursor: none !important;
+  }
+}
+
+.pixelated {
+  image-rendering: pixelated;
+}
+
+/* Section frame: the narrow column with hairline rails like the reference, plus corner ticks. */
+.rail {
+  position: relative;
+  border-inline: 1px solid var(--line);
+}
+.hairline {
+  height: 1px;
+  background: var(--line);
+}
+.tick::before,
+.tick::after {
+  content: "";
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-color: var(--line-2);
+  border-style: solid;
+}
+.tick::before {
+  left: -4px;
+  top: -4px;
+  border-width: 1px 0 0 1px;
+}
+.tick::after {
+  right: -4px;
+  top: -4px;
+  border-width: 1px 1px 0 0;
+}
+
+.stripes {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 6px,
+    color-mix(in srgb, var(--line) 70%, transparent) 6px 7px
+  );
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee {
+  animation: marquee 40s linear infinite;
+}
+.marquee-wrap:hover .marquee {
+  animation-play-state: paused;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+.blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(74 222 128 / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgb(74 222 128 / 0);
+  }
+}
+.live-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
