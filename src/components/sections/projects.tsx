@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Category, Project } from "@/data/profile";
 import { profile } from "@/data/profile";
 
@@ -62,17 +62,7 @@ function ProjectCard({ p, stars }: { p: Project; stars?: number }) {
     <a href={p.live ?? repoUrl} target="_blank" rel="noreferrer" className="group block p-4 sm:p-5" data-cursor={p.live ? "visit" : "repo"}>
       <div className="relative aspect-[2/1] overflow-hidden border border-line bg-bg-2">
         {p.video ? (
-          <video
-            src={p.video}
-            poster={p.image}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-label={`${p.name} demo`}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-          />
+          <LazyVideo src={p.video} poster={p.image} label={`${p.name} demo`} />
         ) : p.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -123,5 +113,36 @@ function PixelCover({ name, category }: { name: string; category: string }) {
       <span className="relative font-mono text-[10px] uppercase tracking-[0.3em] text-accent">{category}</span>
       <span className="relative font-pixel text-4xl leading-none text-fg sm:text-5xl">{name}</span>
     </div>
+  );
+}
+
+/** Plays only while on screen, so a grid of demos stays light. */
+function LazyVideo({ src, poster, label }: { src: string; poster?: string; label: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  useEffect(() => {
+    const v = ref.current!;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      },
+      { rootMargin: "120px" },
+    );
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <video
+      ref={ref}
+      src={src}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-label={label}
+      className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+    />
   );
 }

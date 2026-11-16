@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Jatin Pandey — AI & Full-Stack Developer",
   description:
     "Jatin Pandey (satiricalguru): local-first AI tools, native desktop apps, real-time audio and security tinkering. Building things, breaking things, and occasionally fixing them.",
-  metadataBase: new URL("https://satiricalguru-portfolio.vercel.app"),
+  metadataBase: new URL("https://jatinpandey-portfolio.vercel.app"),
   openGraph: {
     title: "Jatin Pandey — AI & Full-Stack Developer",
     description: "Building things, breaking things, and occasionally fixing them.",

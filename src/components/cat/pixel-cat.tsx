@@ -16,18 +16,22 @@ const PALETTE: Record<string, string> = {
 };
 
 const SCALE = 3;
-const SIZE = 16 * SCALE;
+const FW = 20;
+const FH = 16;
+const SIZE = FH * SCALE;
+const WIDTH = FW * SCALE;
 
 /** Pre-render every frame to an offscreen canvas once. */
-function buildSprites() {
+function buildSprites(outline: string) {
   const sprites = {} as Record<FrameName, HTMLCanvasElement>;
   (Object.keys(FRAMES) as FrameName[]).forEach((name) => {
     const c = document.createElement("canvas");
-    c.width = c.height = 16;
+    c.width = FW;
+    c.height = FH;
     const ctx = c.getContext("2d")!;
     FRAMES[name].forEach((row, y) => {
-      for (let x = 0; x < 16; x++) {
-        const col = PALETTE[row[x]];
+      for (let x = 0; x < FW; x++) {
+        const col = row[x] === "O" ? outline : PALETTE[row[x]];
         if (col) {
           ctx.fillStyle = col;
           ctx.fillRect(x, y, 1, 1);
@@ -71,7 +75,11 @@ export function PixelCat() {
     const wrap = wrapRef.current!;
     const ctx = canvas.getContext("2d")!;
     const fctx = fx.getContext("2d")!;
-    const sprites = buildSprites();
+    // A darker outline on light pages, a warm grey one on dark pages so ears and tail stay visible.
+    const outlineFor = () => (document.documentElement.dataset.theme === "light" ? "#1b1514" : "#8c7b73");
+    let sprites = buildSprites(outlineFor());
+    const themeObserver = new MutationObserver(() => (sprites = buildSprites(outlineFor())));
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const fine = window.matchMedia("(pointer: fine)").matches;
 
@@ -205,8 +213,8 @@ export function PixelCat() {
       } else if (s.mode === "pet") {
         if (s.tick % 40 === 0) particles.push({ x: 18 + Math.random() * 14, y: 22, vy: -0.5, life: 1, kind: "heart" });
       } else if (dist > 48 && s.mode !== "sleep" && !s.hovered) {
-        const speed = reduce ? 2 : dist > 320 ? 9 : 3.4;
-        setMode(dist > 320 && !reduce ? "run" : "walk");
+        const speed = reduce ? 1.6 : dist > 380 ? 5.2 : 2.1;
+        setMode(dist > 380 && !reduce ? "run" : "walk");
         s.x += (ox / dist) * Math.min(speed, dist);
         s.y += (oy / dist) * Math.min(speed, dist);
         if (Math.abs(ox) > 2) s.face = ox > 0 ? 1 : -1;
@@ -224,7 +232,7 @@ export function PixelCat() {
       if (s.mode === "sleep" && s.tick % 70 === 0) particles.push({ x: s.face > 0 ? 34 : 6, y: 20, vy: -0.35, life: 1, kind: "z" });
 
       // Keep inside the viewport.
-      s.x = Math.max(SIZE / 2, Math.min(window.innerWidth - SIZE / 2, s.x));
+      s.x = Math.max(WIDTH / 2, Math.min(window.innerWidth - WIDTH / 2, s.x));
       s.y = Math.max(SIZE, Math.min(window.innerHeight - 4, s.y));
 
       // Pick a frame.
@@ -232,10 +240,10 @@ export function PixelCat() {
       const t = s.tick;
       switch (s.mode) {
         case "walk":
-          frame = Math.floor(t / 9) % 2 ? "walk1" : "walk2";
+          frame = Math.floor(t / 12) % 2 ? "walk1" : "walk2";
           break;
         case "run":
-          frame = Math.floor(t / 5) % 2 ? "run1" : "run2";
+          frame = Math.floor(t / 7) % 2 ? "run1" : "run2";
           break;
         case "sleep":
           frame = Math.floor(t / 50) % 2 ? "sleep1" : "sleep2";
@@ -253,10 +261,10 @@ export function PixelCat() {
           frame = t % 220 < 8 ? "blink" : Math.floor(t / 45) % 2 ? "sit1" : "sit2";
       }
 
-      ctx.clearRect(0, 0, 16, 16);
+      ctx.clearRect(0, 0, FW, FH);
       ctx.drawImage(sprites[frame], 0, 0);
       const purr = s.mode === "pet" ? Math.sin(t / 2) * 0.6 : 0;
-      wrap.style.transform = `translate3d(${Math.round(s.x - SIZE / 2 + purr)}px, ${Math.round(s.y - SIZE)}px, 0)`;
+      wrap.style.transform = `translate3d(${Math.round(s.x - WIDTH / 2 + purr)}px, ${Math.round(s.y - SIZE)}px, 0)`;
       canvas.style.transform = `scaleX(${s.face})`;
       drawFx();
       raf = requestAnimationFrame(loop);
@@ -265,6 +273,7 @@ export function PixelCat() {
 
     return () => {
       cancelAnimationFrame(raf);
+      themeObserver.disconnect();
       clearTimeout(bubbleTimer);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onDown);
@@ -280,12 +289,12 @@ export function PixelCat() {
     <div
       ref={wrapRef}
       className="fixed left-0 top-0 z-[60] select-none"
-      style={{ width: SIZE, height: SIZE, willChange: "transform" }}
+      style={{ width: WIDTH, height: SIZE, willChange: "transform" }}
       data-cursor="pet"
       aria-hidden
     >
-      <canvas ref={fxRef} width={48} height={88} className="pixelated pointer-events-none absolute -top-10 left-0" style={{ width: 48, height: 88 }} />
-      <canvas ref={canvasRef} width={16} height={16} className="pixelated" style={{ width: SIZE, height: SIZE }} />
+      <canvas ref={fxRef} width={60} height={88} className="pixelated pointer-events-none absolute -top-10 left-0" style={{ width: 60, height: 88 }} />
+      <canvas ref={canvasRef} width={FW} height={FH} className="pixelated" style={{ width: WIDTH, height: SIZE }} />
       {bubble && (
         <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap border border-line-2 bg-panel px-2 py-0.5 font-pixel text-[11px] text-fg shadow-[2px_2px_0_var(--line-2)]">
           {bubble}

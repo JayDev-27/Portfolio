@@ -10,6 +10,7 @@ import { Contact, Footer } from "@/components/sections/contact";
 import { projects } from "@/data/profile";
 import { getContributions, getLeetCode, getRepos, getRiver, getSponsors, getUpstreamPRs } from "@/lib/github";
 import { River } from "@/components/sections/river";
+import { Interests } from "@/components/sections/interests";
 
 export default function Home() {
   return (
@@ -55,6 +56,10 @@ export default function Home() {
 
         <Section index="06 · Learning" title="Certifications">
           <Certifications />
+        </Section>
+
+        <Section id="off-the-clock" index="06b · Off the clock" title="Things I love" kicker="Hover each one. There's a little surprise in every card.">
+          <Interests />
         </Section>
 
         <Section id="sponsors" index="07 · Sponsors" title="Pixel hall of fame" kicker="People who back my open-source work. Each one becomes a pixel portrait.">

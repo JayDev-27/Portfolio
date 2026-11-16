@@ -66,6 +66,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Forge",
+    image: "/projects/Forge.jpg",
     name: "Forge",
     blurb: "A local-first AI IDE forked from VS Code. Works offline with Ollama, LM Studio and vLLM. Telemetry removed.",
     category: "AI & Agents",
@@ -74,6 +75,7 @@ export const projects: Project[] = [
   {
     repo: "Jarvis",
     image: "/projects/Jarvis.jpg",
+    video: "/projects/Jarvis.mp4",
     name: "Jarvis",
     blurb: "A holographic Three.js assistant with voice cloning, TTS and real macOS system actions.",
     category: "AI & Agents",
@@ -82,6 +84,7 @@ export const projects: Project[] = [
   {
     repo: "Vantage",
     image: "/projects/Vantage.jpg",
+    video: "/projects/Vantage.mp4",
     name: "Vantage",
     blurb: "Fast, free live wallpapers for macOS that render beneath your desktop icons.",
     category: "Native & Desktop",
@@ -90,6 +93,7 @@ export const projects: Project[] = [
   {
     repo: "OpenBot",
     image: "/projects/OpenBot.jpg",
+    video: "/projects/OpenBot.mp4",
     name: "OpenBot",
     blurb: "Open-source AI teammates, each with its own sandboxed computer. Runs 100% locally with Ollama.",
     category: "AI & Agents",
@@ -97,6 +101,7 @@ export const projects: Project[] = [
   },
   {
     repo: "Wraith",
+    image: "/projects/Wraith.jpg",
     name: "Wraith",
     blurb: "A grounding-first AI reverse-engineering co-pilot for Ghidra and Cutter.",
     category: "Security",
@@ -105,6 +110,7 @@ export const projects: Project[] = [
   {
     repo: "Frontend-Library",
     image: "/projects/Frontend-Library.jpg",
+    video: "/projects/Frontend-Library.mp4",
     name: "Frontend Library",
     blurb: "14,500+ curated frontend assets — components, motion, fonts and templates — with live previews.",
     category: "Web & 3D",
@@ -114,6 +120,7 @@ export const projects: Project[] = [
   {
     repo: "MangaDock",
     image: "/projects/MangaDock.jpg",
+    video: "/projects/MangaDock.mp4",
     name: "MangaDock",
     blurb: "A free, ad-free, open-source reader for manga, manhwa and manhua.",
     category: "Native & Desktop",
@@ -123,6 +130,7 @@ export const projects: Project[] = [
   {
     repo: "FloodSetu",
     image: "/projects/FloodSetu.jpg",
+    video: "/projects/FloodSetu.mp4",
     name: "FloodSetu",
     blurb: "Multi-agent flood rescue dispatch with Contract-Net auctions, offline SOS and a tamper-evident relief ledger.",
     category: "AI & Agents",
@@ -132,6 +140,7 @@ export const projects: Project[] = [
   {
     repo: "RVC-Voicechanger",
     image: "/projects/RVC-Voicechanger.jpg",
+    video: "/projects/RVC-Voicechanger.mp4",
     name: "RVC Voice Changer",
     blurb: "A desktop voice changer using retrieval-based voice conversion and a Spotify Pedalboard DSP chain.",
     category: "Real-time Audio",

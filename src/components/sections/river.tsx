@@ -8,7 +8,25 @@ const CELL = 4;
 const ROW = 34;
 const AXIS = 26;
 const PALETTE = ["#c9bba9", "#8fb3c9", "#a7c49a", "#d6b26e", "#b9a0d4", "#d99a8a", "#8cc9bf", "#c7a5b8", "#a8b0bd"];
-const KOI = ["..XX...", ".XXXXX.", "XXXXXXT", ".XXXXX.", "..XX..."];
+// Koi facing right. W body, R patch (lane colour), K eye, T tail, F fin, H highlight.
+const KOI_A = [
+  "......FF.....",
+  "..T..WWRRH...",
+  ".TTWWWRRWWWW.",
+  "TTTWWRRRWWWKW",
+  ".TTWWWWWRRWW.",
+  "..T..WWWWW...",
+  ".....FF......",
+];
+const KOI_B = [
+  "......FF.....",
+  ".T...WWRRH...",
+  "TTTWWWRRWWWW.",
+  ".TTWWRRRWWWKW",
+  "TTTWWWWWRRWW.",
+  ".T...WWWWW...",
+  ".....FF......",
+];
 
 /**
  * A year of commits as pixel streams: one lane per repository, time flows left → right,
@@ -114,13 +132,32 @@ export function River({ repos, start }: { repos: RiverRepo[]; start: string }) {
           const d = Math.hypot(mouse.x - x, mouse.y - cy);
           k.dodge += ((d < 40 ? (cy > mouse.y ? 1 : -1) * (40 - d) * 0.35 : 0) - k.dodge) * 0.2;
           const y = cy + Math.sin(frame / 18 + i) * 1.5 + Math.max(-10, Math.min(10, k.dodge));
-          const px = 2;
+          const px = 3;
           const isRecent = r.name === recent.name;
-          KOI.forEach((row, ry) =>
+          const sprite = Math.floor(frame / 10) % 2 ? KOI_A : KOI_B;
+          const ox = snap(x) - 7 * px;
+          const oy = Math.round(y) - 3 * px;
+          // Soft shadow under the fish.
+          ctx.fillStyle = "rgb(0 0 0 / 0.28)";
+          ctx.fillRect(ox + 3 * px, oy + 7 * px, 8 * px, px);
+          sprite.forEach((row, ry) =>
             [...row].forEach((ch, rx) => {
               if (ch === ".") return;
-              ctx.fillStyle = ch === "T" ? rgb(i, 1) : isRecent ? `rgb(${colors.glow})` : rx === 4 && ry === 1 ? "#e0263f" : "#efe6da";
-              ctx.fillRect(snap(x) + (rx - 4) * px, Math.round(y) + (ry - 2) * px, px, px);
+              ctx.fillStyle =
+                ch === "W"
+                  ? "#f3ece2"
+                  : ch === "H"
+                    ? "#ffffff"
+                    : ch === "K"
+                      ? "#1b1514"
+                      : ch === "R"
+                        ? isRecent
+                          ? `rgb(${colors.glow})`
+                          : rgb(i, 1)
+                        : ch === "F"
+                          ? "rgb(243 236 226 / 0.75)"
+                          : rgb(i, 0.85);
+              ctx.fillRect(ox + rx * px, oy + ry * px, px, px);
             }),
           );
         }

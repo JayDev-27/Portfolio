@@ -178,7 +178,7 @@ export type PR = { title: string; number: number; url: string; mergedAt: string 
 export type UpstreamRepo = { repo: string; owner: string; stars: number; description: string | null; logo: string; prs: PR[] };
 
 // Repos GitHub search sometimes misses; always checked in addition to the search.
-const EXTRA_UPSTREAM = ["corsairdev/corsair", "NousResearch/hermes-agent", "astral-sh/ty"];
+const EXTRA_UPSTREAM = ["corsairdev/corsair", "NousResearch/hermes-agent", "astral-sh/ty", "apache/libcloud"];
 const MIN_STARS = 1000;
 
 /** Merged PRs into well-known repositories I don't own (1k+ stars), grouped by repo. */

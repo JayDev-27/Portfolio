@@ -48,7 +48,7 @@ function PixelAvatar({ src, size = 96 }: { src: string; size?: number }) {
       ref={ref}
       width={size}
       height={size}
-      className="pixelated h-full w-full"
+      className="pixelated h-full w-full rounded-full"
       onPointerEnter={() => setHover(true)}
       onPointerLeave={() => setHover(false)}
     />
@@ -72,16 +72,16 @@ export function SponsorWall({ sponsors, live }: { sponsors: Sponsor[]; live: boo
             className="group relative block"
             data-cursor={`@${s.login}`}
           >
-            <div className="relative aspect-square border border-line bg-bg-2 p-1.5 transition-all duration-200 group-hover:-translate-y-1 group-hover:border-accent group-hover:shadow-[3px_3px_0_var(--accent)]">
+            <div className="relative aspect-square rounded-full border border-line-2 bg-bg-2 p-1.5 transition-all duration-200 group-hover:-translate-y-1 group-hover:border-accent group-hover:shadow-[0_0_0_3px_rgb(var(--glow)/0.25)]">
               <PixelAvatar src={s.avatarUrl} />
-              <span className="absolute -right-1.5 -top-1.5 bg-accent px-1 font-pixel text-[10px] leading-4 text-white">♥</span>
+              <span className="absolute right-[6%] top-[6%] grid h-5 w-5 place-items-center rounded-full bg-accent font-pixel text-[10px] text-white">♥</span>
             </div>
             <div className="mt-2 truncate text-center font-mono text-[11px] text-muted transition-colors group-hover:text-fg">{s.name || s.login}</div>
             <div className="truncate text-center font-mono text-[9px] text-faint">@{s.login}</div>
           </motion.a>
         ))}
         <a href={profile.sponsorUrl} target="_blank" rel="noreferrer" className="group block" data-cursor="join">
-          <div className="stripes relative grid aspect-square place-items-center border border-dashed border-line-2 transition-colors group-hover:border-accent">
+          <div className="stripes relative grid aspect-square place-items-center rounded-full border border-dashed border-line-2 transition-colors group-hover:border-accent">
             <div className="text-center">
               <div className="font-pixel text-3xl text-faint transition-all group-hover:scale-125 group-hover:text-accent">+</div>
             </div>
