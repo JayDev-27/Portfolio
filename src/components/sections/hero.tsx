@@ -1,3 +1,4 @@
+import { ViewCounter } from "../ui/view-counter";
 import { PixelName } from "../hero/pixel-name";
 import { Magnetic } from "../ui/motion";
 import { RoleTicker, CopyEmail, TimeAgo } from "./hero-client";
@@ -8,7 +9,10 @@ export function Hero() {
   return (
     <section id="top" className="rail mx-auto max-w-3xl">
       <div className="flex items-center justify-between px-4 pt-8 font-mono text-[10px] uppercase tracking-[0.25em] text-faint sm:px-6">
-        <span>[ Portfolio · 2026 ]</span>
+        <span className="flex items-center gap-3">
+          [ Portfolio · 2026 ]
+          <ViewCounter className="text-muted" />
+        </span>
         <span className="flex items-center gap-2 text-muted">
           <span className="live-dot h-1.5 w-1.5 bg-green-400" />
           {profile.status}

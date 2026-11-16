@@ -61,7 +61,7 @@ export function Interests() {
                 animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                 exit={{ opacity: 0, y: 10, scale: 0.94 }}
                 transition={{ type: "spring", stiffness: 320, damping: 22 }}
-                className="pointer-events-none absolute bottom-[calc(100%-1.5rem)] left-1/2 z-30 w-64 -translate-x-1/2"
+                className={`pointer-events-none absolute bottom-[calc(100%-1.5rem)] left-1/2 z-30 -translate-x-1/2 ${it.key === "anime" ? "w-44" : "w-64"}`}
               >
                 <EasterEgg k={it.key} />
               </motion.div>

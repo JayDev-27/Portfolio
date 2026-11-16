@@ -1,3 +1,4 @@
+import { ViewCounter } from "../ui/view-counter";
 import { CopyEmail } from "./hero-client";
 import { Magnetic, Scramble } from "../ui/motion";
 import { profile } from "@/data/profile";
@@ -39,6 +40,7 @@ export function Footer() {
     <footer className="rail mx-auto max-w-3xl border-t border-line">
       <div className="flex flex-col items-center justify-between gap-3 px-4 py-6 font-mono text-[10px] uppercase tracking-widest text-faint sm:flex-row sm:px-6">
         <span>© 2026 {profile.name} · built with Next.js, pixels and one cat</span>
+        <ViewCounter className="text-muted" />
         <span className="text-muted">
           1000 − 7 = 993<span className="blink">_</span>
         </span>
