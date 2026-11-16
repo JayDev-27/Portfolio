@@ -30,7 +30,7 @@ export function ViewCounter({ className = "" }: { className?: string }) {
   if (n === null) return null;
   return (
     <span className={className} title="Visits to this site">
-      ◉ {n.toLocaleString("en-IN")} views
+      ◉ {n.toLocaleString("en-IN")} {n === 1 ? "view" : "views"}
     </span>
   );
 }
