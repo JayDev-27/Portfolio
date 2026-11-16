@@ -8,7 +8,7 @@ import { Journey, OpenSource, Skills, Certifications } from "@/components/sectio
 import { SponsorWall } from "@/components/sections/sponsors";
 import { Contact, Footer } from "@/components/sections/contact";
 import { projects } from "@/data/profile";
-import { getContributions, getLeetCode, getRepos, getRiver, getSponsors, getUpstreamPRs } from "@/lib/github";
+import { getContributions, getLeetCode, getRepos, getRiver, getBeatriceStars, getSponsors, getUpstreamPRs } from "@/lib/github";
 import { River } from "@/components/sections/river";
 import { Interests } from "@/components/sections/interests";
 
@@ -107,8 +107,10 @@ async function RiverData() {
 }
 
 async function ProjectsData() {
-  const { repos } = await getRepos();
+  const [{ repos }, beatrice] = await Promise.all([getRepos(), getBeatriceStars()]);
   const stars = Object.fromEntries(Object.values(repos).map((r) => [r.name, r.stars]));
+  // Beatrice spans several repos and an organisation; show the combined count.
+  if (beatrice !== null) stars["Beatrice-voicechanger-windows"] = beatrice;
   return <Projects projects={projects} stars={stars} />;
 }
 

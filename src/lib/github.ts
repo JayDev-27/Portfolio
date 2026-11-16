@@ -315,3 +315,18 @@ export async function getRiver(): Promise<{ repos: RiverRepo[]; start: string } 
   if (!repos.length) return null;
   return { repos, start: start.toISOString() };
 }
+
+/** Total stars across every Beatrice repository, from the Beatrice website's own API. */
+export async function getBeatriceStars(): Promise<number | null> {
+  "use cache";
+  cacheTag("github");
+  cacheLife("hours");
+  try {
+    const res = await fetch("https://project-beatrice.vercel.app/api/stars");
+    if (!res.ok) return null;
+    const j = (await res.json()) as { total?: number };
+    return typeof j.total === "number" ? j.total : null;
+  } catch {
+    return null;
+  }
+}
