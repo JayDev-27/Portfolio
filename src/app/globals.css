@@ -55,6 +55,7 @@
 
 html {
   background: var(--bg);
+  overflow-x: clip;
 }
 
 body {

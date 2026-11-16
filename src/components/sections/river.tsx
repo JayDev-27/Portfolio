@@ -132,7 +132,7 @@ export function River({ repos, start }: { repos: RiverRepo[]; start: string }) {
           const d = Math.hypot(mouse.x - x, mouse.y - cy);
           k.dodge += ((d < 40 ? (cy > mouse.y ? 1 : -1) * (40 - d) * 0.35 : 0) - k.dodge) * 0.2;
           const y = cy + Math.sin(frame / 18 + i) * 1.5 + Math.max(-10, Math.min(10, k.dodge));
-          const px = 3;
+          const px = W < 360 ? 2 : 3;
           const isRecent = r.name === recent.name;
           const sprite = Math.floor(frame / 10) % 2 ? KOI_A : KOI_B;
           const ox = snap(x) - 7 * px;
@@ -173,6 +173,8 @@ export function River({ repos, start }: { repos: RiverRepo[]; start: string }) {
         const d = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth() + m, 1));
         const wk = (d.getTime() - s.getTime()) / (7 * 864e5);
         if (wk >= WEEKS - 2) break;
+        // Narrow screens: label every third month so the axis stays readable.
+        if (W < 420 && m % 3 !== 0) continue;
         const x = (wk / WEEKS) * W;
         ctx.fillStyle = colors.faint;
         ctx.fillRect(x, axisY, 1, 6);
@@ -219,7 +221,7 @@ export function River({ repos, start }: { repos: RiverRepo[]; start: string }) {
 
   return (
     <div className="px-4 pb-6 sm:px-6">
-      <div className="grid grid-cols-[minmax(0,8.5rem)_1fr_3rem] gap-x-3">
+      <div className="grid grid-cols-[minmax(0,5.5rem)_1fr_2.25rem] gap-x-2 sm:grid-cols-[minmax(0,8.5rem)_1fr_3rem] sm:gap-x-3">
         <div>
           {repos.map((r) => (
             <a

@@ -32,9 +32,9 @@ function formatStars(n: number) {
 
 export function OpenSource({ repos }: { repos: UpstreamRepo[] }) {
   return (
-    <div className="grid border-t border-line">
+    <div className="grid grid-cols-1 border-t border-line">
       {repos.map((r) => (
-        <div key={r.repo} className="group border-b border-line px-4 py-5 transition-colors hover:bg-bg-2/60 sm:px-6">
+        <div key={r.repo} className="group min-w-0 border-b border-line px-4 py-5 transition-colors hover:bg-bg-2/60 sm:px-6">
           <a href={`https://github.com/${r.repo}`} target="_blank" rel="noreferrer" className="flex items-center gap-3.5" data-cursor="repo">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={r.logo} alt={`${r.owner} logo`} width={44} height={44} className="h-11 w-11 shrink-0 border border-line bg-white object-cover" />
@@ -43,7 +43,7 @@ export function OpenSource({ repos }: { repos: UpstreamRepo[] }) {
                 <span className="font-mono text-[12px] text-muted">{r.owner}/</span>
                 <span className="text-[17px] font-medium text-fg transition-colors group-hover:text-accent">{r.repo.split("/")[1]}</span>
               </div>
-              {r.description && <p className="truncate text-[12.5px] text-muted">{r.description}</p>}
+              {r.description && <p className="line-clamp-2 text-[12.5px] leading-snug text-muted">{r.description}</p>}
             </div>
             <span className="shrink-0 border border-line px-2 py-1 font-mono text-[11px] text-fg">★ {formatStars(r.stars)}</span>
           </a>

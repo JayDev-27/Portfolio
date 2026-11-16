@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { ContributionDay } from "@/lib/github";
 
@@ -10,6 +10,21 @@ function color(l: number) {
 
 export function ContributionGrid({ weeks }: { weeks: ContributionDay[][] }) {
   const [tip, setTip] = useState<{ d: ContributionDay; x: number; y: number } | null>(null);
+  const scroller = useRef<HTMLDivElement>(null);
+  // On narrow screens, start at the most recent weeks.
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    // Jump to the newest weeks the first time the graph is on screen.
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && el.scrollWidth > el.clientWidth) {
+        el.scrollLeft = el.scrollWidth;
+        io.disconnect();
+      }
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const shown = weeks.slice(-53);
   const months: { i: number; label: string }[] = [];
   shown.forEach((w, i) => {
@@ -19,7 +34,7 @@ export function ContributionGrid({ weeks }: { weeks: ContributionDay[][] }) {
 
   return (
     <div className="relative" data-grid-root onPointerLeave={() => setTip(null)}>
-      <div className="overflow-x-auto pb-1">
+      <div ref={scroller} className="overflow-x-auto pb-1">
         <div className="min-w-[640px]">
           <div className="relative mb-1.5 h-3 font-mono text-[9px] uppercase tracking-wider text-faint">
             {months.map((m) => (
