@@ -8,6 +8,14 @@ Pixel-art portfolio for Jatin Pandey. Next.js 16 (Cache Components), Tailwind 4,
 - LeetCode stats
 - GitHub Sponsors wall in pixel art, refreshed instantly by webhook
 
+## Main account suspended (Nov 2026)
+
+The main GitHub account (`satiricalguru`) is suspended pending review, so GitHub returns nothing for it. Until it is restored:
+
+- `mainAccountSuspended` in `src/data/profile.ts` is `true`: live data and repo links use the backup account `JayDev-27`, and a "GitHub · backup" link is shown.
+- `src/data/archive.ts` (+ `archive-contributions.json`) holds the main account's last known stats, stars, contribution calendar and merged upstream PRs; the site adds the backup account's live numbers on top.
+- When the main account is back, set `mainAccountSuspended = false`.
+
 ## Env
 
 | Variable | Purpose |
