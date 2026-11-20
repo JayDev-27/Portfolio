@@ -1,6 +1,18 @@
+/**
+ * The main GitHub account (satiricalguru) is suspended while GitHub reviews it. Until it is restored,
+ * live GitHub data and repo links use the backup account, and src/data/archive.ts stands in for the
+ * main account's history. When the main account is back, set this to false.
+ */
+export const mainAccountSuspended = true;
+const MAIN = "satiricalguru";
+const BACKUP = "JayDev-27";
+
 export const profile = {
   name: "Jatin Pandey",
-  handle: "satiricalguru",
+  /** Account for live GitHub data and repo links. */
+  handle: mainAccountSuspended ? BACKUP : MAIN,
+  mainHandle: MAIN,
+  backupHandle: BACKUP,
   initials: "JP",
   role: "AI & Full-Stack Developer",
   tagline: "Building things, breaking things, and occasionally fixing them.",
@@ -10,15 +22,28 @@ export const profile = {
   education: "B.Tech CSE · Manipal University Jaipur",
   status: "Open to work",
   socials: [
-    { label: "GitHub", href: "https://github.com/satiricalguru" },
+    { label: "GitHub", href: `https://github.com/${MAIN}` },
+    { label: "GitHub · backup", href: `https://github.com/${BACKUP}` },
     { label: "LinkedIn", href: "https://www.linkedin.com/in/jatin-pandey-66328141a/" },
     { label: "X", href: "https://x.com/JayDevSG" },
     { label: "LeetCode", href: "https://leetcode.com/u/KiKISJ3blF/" },
     { label: "Email", href: "mailto:jatinjio1212@gmail.com" },
   ],
   leetcode: "KiKISJ3blF",
-  sponsorUrl: "https://github.com/sponsors/satiricalguru",
+  /** GitHub Sponsors lives on the main account; the backup has no listing, so sponsor buttons hide meanwhile. */
+  sponsorUrl: mainAccountSuspended ? null : `https://github.com/sponsors/${MAIN}`,
 };
+
+/** Projects that were never mirrored to the backup account have no repo to link to while the main one is down. */
+export const mirrored = new Set([
+  "Portfolio", "Frontend-Library", "Brawlverse", "Vantage", "Airshift", "OpenBot", "Jarvis",
+  "RVC-Voicechanger", "Threejs-scroll-showcases", "Ai-atlas", "Canary", "threejs-library",
+]);
+
+export function repoUrl(repo: string): string | null {
+  if (!mainAccountSuspended) return `https://github.com/${MAIN}/${repo}`;
+  return mirrored.has(repo) ? `https://github.com/${BACKUP}/${repo}` : null;
+}
 
 export const roles = ["AI tinkerer", "CTF grinder", "native app builder", "reverse engineer", "open-source contributor"];
 

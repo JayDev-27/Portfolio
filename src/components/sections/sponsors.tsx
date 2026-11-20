@@ -80,15 +80,17 @@ export function SponsorWall({ sponsors, live }: { sponsors: Sponsor[]; live: boo
             <div className="truncate text-center font-mono text-[9px] text-faint">@{s.login}</div>
           </motion.a>
         ))}
-        <a href={profile.sponsorUrl} target="_blank" rel="noreferrer" className="group block" data-cursor="join">
-          <div className="stripes relative grid aspect-square place-items-center rounded-full border border-dashed border-line-2 transition-colors group-hover:border-accent">
-            <div className="text-center">
-              <div className="font-pixel text-3xl text-faint transition-all group-hover:scale-125 group-hover:text-accent">+</div>
+        {profile.sponsorUrl && (
+          <a href={profile.sponsorUrl} target="_blank" rel="noreferrer" className="group block" data-cursor="join">
+            <div className="stripes relative grid aspect-square place-items-center rounded-full border border-dashed border-line-2 transition-colors group-hover:border-accent">
+              <div className="text-center">
+                <div className="font-pixel text-3xl text-faint transition-all group-hover:scale-125 group-hover:text-accent">+</div>
+              </div>
             </div>
-          </div>
-          <div className="mt-2 text-center font-mono text-[11px] text-muted group-hover:text-accent">your pixel here</div>
-          <div className="text-center font-mono text-[9px] text-faint">sponsor ↗</div>
-        </a>
+            <div className="mt-2 text-center font-mono text-[11px] text-muted group-hover:text-accent">your pixel here</div>
+            <div className="text-center font-mono text-[9px] text-faint">sponsor ↗</div>
+          </a>
+        )}
       </div>
       <p className="mt-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-faint">
         <span className={`h-1.5 w-1.5 ${live ? "live-dot bg-green-400" : "bg-faint"}`} />

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Category, Project } from "@/data/profile";
-import { profile } from "@/data/profile";
+import { repoUrl } from "@/data/profile";
 
 const CATS: ("All" | Category)[] = ["All", "AI & Agents", "Native & Desktop", "Real-time Audio", "Security", "Web & 3D"];
 
@@ -57,9 +57,9 @@ export function Projects({ projects, stars }: { projects: Project[]; stars: Reco
 }
 
 function ProjectCard({ p, stars }: { p: Project; stars?: number }) {
-  const repoUrl = `https://github.com/${profile.handle}/${p.repo}`;
+  const href = p.live ?? repoUrl(p.repo) ?? undefined;
   return (
-    <a href={p.live ?? repoUrl} target="_blank" rel="noreferrer" className="group block p-4 sm:p-5" data-cursor={p.live ? "visit" : "repo"}>
+    <a href={href} target={href ? "_blank" : undefined} rel="noreferrer" className="group block p-4 sm:p-5" data-cursor={p.live ? "visit" : href ? "repo" : undefined}>
       <div className="relative aspect-[2/1] overflow-hidden border border-line bg-bg-2">
         {p.video ? (
           <LazyVideo src={p.video} poster={p.image} label={`${p.name} demo`} />
@@ -98,7 +98,7 @@ function ProjectCard({ p, stars }: { p: Project; stars?: number }) {
           </span>
         ))}
         <span className="ml-auto font-mono text-[11px] text-faint transition-all group-hover:translate-x-0.5 group-hover:text-fg">
-          {p.live ? "visit ↗" : "code ↗"}
+          {p.live ? "visit ↗" : href ? "code ↗" : ""}
         </span>
       </div>
     </a>

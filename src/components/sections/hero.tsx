@@ -2,7 +2,7 @@ import { ViewCounter } from "../ui/view-counter";
 import { PixelName } from "../hero/pixel-name";
 import { Magnetic } from "../ui/motion";
 import { RoleTicker, CopyEmail, TimeAgo } from "./hero-client";
-import { profile } from "@/data/profile";
+import { mainAccountSuspended, profile } from "@/data/profile";
 import type { RepoInfo } from "@/lib/github";
 
 export function Hero() {
@@ -79,18 +79,29 @@ export function Intro({ latest }: { latest: RepoInfo | null }) {
             <Magnetic>
               <CopyEmail />
             </Magnetic>
-            <Magnetic>
-              <a
-                href={profile.sponsorUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 border border-line-2 px-3.5 py-2 text-sm text-fg transition-colors hover:border-accent hover:text-accent"
-                data-cursor="sponsor"
-              >
-                <span className="text-accent">♥</span> Sponsor me
-              </a>
-            </Magnetic>
+            {profile.sponsorUrl && (
+              <Magnetic>
+                <a
+                  href={profile.sponsorUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 border border-line-2 px-3.5 py-2 text-sm text-fg transition-colors hover:border-accent hover:text-accent"
+                  data-cursor="sponsor"
+                >
+                  <span className="text-accent">♥</span> Sponsor me
+                </a>
+              </Magnetic>
+            )}
           </div>
+          {mainAccountSuspended && (
+            <p className="mt-5 border-l-2 border-accent pl-3 font-mono text-[11px] leading-relaxed text-muted">
+              My main GitHub (@{profile.mainHandle}) is under review by GitHub. Until it&apos;s back, my code lives on the backup account{" "}
+              <a href={`https://github.com/${profile.backupHandle}`} target="_blank" rel="noreferrer" className="text-fg underline decoration-line-2 underline-offset-2 hover:text-accent" data-cursor="repo">
+                @{profile.backupHandle}
+              </a>
+              .
+            </p>
+          )}
           <div className="mt-5 flex flex-wrap gap-x-4 gap-y-1">
             {profile.socials.map((s) => (
               <a

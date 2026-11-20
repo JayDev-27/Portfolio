@@ -1,7 +1,10 @@
 import { cacheLife, cacheTag } from "next/cache";
-import { fallbackSponsors, profile } from "@/data/profile";
+import { fallbackSponsors, mainAccountSuspended, profile } from "@/data/profile";
+import { archive } from "@/data/archive";
 
+/** Live data comes from the active account; while the main one is suspended, the archive fills in its history. */
 const LOGIN = profile.handle;
+const SPONSOR_LOGIN = profile.mainHandle;
 const token = () => process.env.GITHUB_TOKEN;
 
 async function gql<T>(query: string, variables: Record<string, unknown> = {}): Promise<T | null> {
@@ -25,13 +28,17 @@ async function gql<T>(query: string, variables: Record<string, unknown> = {}): P
 
 async function rest<T>(path: string): Promise<T | null> {
   const t = token();
-  try {
-    const res = await fetch(`https://api.github.com${path}`, {
+  const get = (auth: boolean) =>
+    fetch(`https://api.github.com${path}`, {
       headers: {
         Accept: "application/vnd.github+json",
-        ...(t ? { Authorization: `Bearer ${t}` } : {}),
+        ...(auth && t ? { Authorization: `Bearer ${t}` } : {}),
       },
     });
+  try {
+    let res = await get(true);
+    // A revoked token (e.g. one from a suspended account) fails every call; public data still works without it.
+    if (res.status === 401 && t) res = await get(false);
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch {
@@ -58,16 +65,16 @@ export async function getSponsors(): Promise<{ sponsors: Sponsor[]; live: boolea
     `query($login:String!){ user(login:$login){ sponsors(first:100){ nodes{
       ... on User{ login name avatarUrl(size:160) url }
       ... on Organization{ login name avatarUrl(size:160) url } } } } }`,
-    { login: LOGIN },
+    { login: SPONSOR_LOGIN },
   );
   if (!data?.user) {
     // Tokenless: read the public GitHub Sponsors page.
     try {
-      const res = await fetch(`https://github.com/sponsors/${LOGIN}`, { headers: { "User-Agent": "portfolio" } });
+      const res = await fetch(`https://github.com/sponsors/${SPONSOR_LOGIN}`, { headers: { "User-Agent": "portfolio" } });
       if (res.ok) {
         const html = await res.text();
         const logins = [...new Set([...html.matchAll(/alt="@([A-Za-z0-9-]+)"/g)].map((m) => m[1]))].filter(
-          (l) => l.toLowerCase() !== LOGIN.toLowerCase(),
+          (l) => l.toLowerCase() !== SPONSOR_LOGIN.toLowerCase(),
         );
         const known = Object.fromEntries(fallbackSponsors.map((f) => [f.login, f.name]));
         return {
@@ -88,11 +95,40 @@ export async function getSponsors(): Promise<{ sponsors: Sponsor[]; live: boolea
 
 export type ContributionDay = { date: string; count: number; level: number };
 
+/** Re-bucket counts into GitHub-style quartile levels after merging two calendars. */
+function withLevels(weeks: ContributionDay[][]): ContributionDay[][] {
+  const counts = weeks.flat().map((d) => d.count).filter((c) => c > 0).sort((a, b) => a - b);
+  const q = (p: number) => counts[Math.min(counts.length - 1, Math.floor(p * counts.length))] ?? 0;
+  const [q1, q2, q3] = [q(0.25), q(0.5), q(0.75)];
+  return weeks.map((w) =>
+    w.map((d) => ({ ...d, level: d.count === 0 ? 0 : d.count <= q1 ? 1 : d.count <= q2 ? 2 : d.count <= q3 ? 3 : 4 })),
+  );
+}
+
+/** Live calendar of the active account plus the archived main-account calendar, day by day. */
 export async function getContributions(): Promise<{ total: number; weeks: ContributionDay[][] } | null> {
   "use cache";
   cacheTag("github");
   cacheLife("hours");
 
+  const live = await getLiveContributions();
+  if (!mainAccountSuspended) return live;
+
+  const old = new Map(archive.calendar);
+  let weeks: ContributionDay[][];
+  if (live) {
+    weeks = live.weeks.map((w) => w.map((d) => ({ ...d, count: d.count + (old.get(d.date) ?? 0) })));
+  } else {
+    weeks = [];
+    archive.calendar.forEach(([date, count], i) => {
+      if (i % 7 === 0) weeks.push([]);
+      weeks[weeks.length - 1].push({ date, count, level: 0 });
+    });
+  }
+  return { total: archive.contributions + (live?.total ?? 0), weeks: withLevels(weeks) };
+}
+
+async function getLiveContributions(): Promise<{ total: number; weeks: ContributionDay[][] } | null> {
   type R = {
     user: {
       contributionsCollection: {
@@ -171,7 +207,24 @@ export async function getRepos(): Promise<{
       if (!latest && r.name !== LOGIN) latest = info;
     }
   }
-  return { repos, totalStars, publicRepos: user?.public_repos ?? 81, followers: user?.followers ?? 61, latest };
+  if (!mainAccountSuspended) {
+    return { repos, totalStars, publicRepos: user?.public_repos ?? archive.publicRepos, followers: user?.followers ?? archive.followers, latest };
+  }
+
+  // Main account history from the archive, plus anything new on the backup account.
+  for (const [name, stars] of Object.entries(archive.stars)) {
+    const r = repos[name];
+    if (r) r.stars += stars;
+    else repos[name] = { name, stars, pushedAt: "", description: null, language: null };
+    totalStars += stars;
+  }
+  return {
+    repos,
+    totalStars,
+    publicRepos: Math.max(archive.publicRepos, user?.public_repos ?? 0),
+    followers: archive.followers + (user?.followers ?? 0),
+    latest,
+  };
 }
 
 export type PR = { title: string; number: number; url: string; mergedAt: string };
@@ -220,7 +273,32 @@ export async function getUpstreamPRs(): Promise<UpstreamRepo[]> {
       } satisfies UpstreamRepo;
     }),
   );
-  return repos.filter((r): r is UpstreamRepo => !!r).sort((a, b) => b.stars - a.stars);
+  const found = repos.filter((r): r is UpstreamRepo => !!r);
+
+  if (mainAccountSuspended) {
+    // GitHub hides a suspended account's pull requests, so the main account's merged PRs come from the archive.
+    // Their PR pages 404 until the account is restored, so they link to the project instead.
+    const archived = await Promise.all(
+      archive.upstream.map(async (a) => {
+        const info = await rest<R>(`/repos/${a.repo}`);
+        const prs: PR[] = a.prs.map((p) => ({ title: p.title, number: p.number, url: `https://github.com/${a.repo}`, mergedAt: p.mergedAt }));
+        return {
+          repo: a.repo,
+          owner: info?.owner.login ?? a.repo.split("/")[0],
+          stars: info?.stargazers_count ?? a.stars,
+          description: info?.description ?? a.description,
+          logo: info ? `${info.owner.avatar_url}${info.owner.avatar_url.includes("?") ? "&" : "?"}s=96` : `https://avatars.githubusercontent.com/u/${a.ownerId}?s=96`,
+          prs,
+        } satisfies UpstreamRepo;
+      }),
+    );
+    for (const a of archived) {
+      const same = found.find((f) => f.repo === a.repo);
+      if (same) same.prs = [...same.prs, ...a.prs.filter((p) => !same.prs.some((s) => s.number === p.number))].sort((x, y) => y.mergedAt.localeCompare(x.mergedAt));
+      else found.push(a);
+    }
+  }
+  return found.sort((a, b) => b.stars - a.stars);
 }
 
 export type LeetCodeStats = { solved: number; easy: number; medium: number; hard: number; totals: Record<string, number>; ranking: number };
@@ -297,7 +375,13 @@ export async function getRiver(): Promise<{ repos: RiverRepo[]; start: string } 
     const own = list.filter((r) => !r.fork && r.name !== LOGIN).slice(0, 14);
     const stats = await Promise.all(
       own.map(async (r) => {
-        const s = await rest<{ week: number; total: number }[]>(`/repos/${LOGIN}/${r.name}/stats/commit_activity`);
+        const path = `/repos/${LOGIN}/${r.name}/stats/commit_activity`;
+        let s = await rest<{ week: number; total: number }[]>(path);
+        // GitHub answers 202 with an empty body while it computes stats for a repo it hasn't counted yet.
+        if (!Array.isArray(s)) {
+          await new Promise((res) => setTimeout(res, 3000));
+          s = await rest<{ week: number; total: number }[]>(path);
+        }
         if (!Array.isArray(s)) return null;
         const weeks = new Array(WEEKS).fill(0);
         for (const w of s) weeks[weekOf(new Date(w.week * 1000).toISOString())] += w.total;
