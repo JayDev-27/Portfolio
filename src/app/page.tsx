@@ -109,8 +109,10 @@ async function RiverData() {
 async function ProjectsData() {
   const [{ repos }, beatrice] = await Promise.all([getRepos(), getBeatriceStars()]);
   const stars = Object.fromEntries(Object.values(repos).map((r) => [r.name, r.stars]));
-  // Beatrice spans several repos and an organisation; show the combined count.
-  if (beatrice !== null) stars["Beatrice-voicechanger-windows"] = beatrice;
+  // Beatrice spans several repos; combine live stars when the website API is unavailable.
+  const combinedBeatrice = (repos["beatrice-voicechanger-windows"]?.stars ?? 0) + (repos["beatrice-voicechanger-macos"]?.stars ?? 0);
+  if (beatrice !== null) stars["beatrice-voicechanger-windows"] = beatrice;
+  else if (combinedBeatrice > 0) stars["beatrice-voicechanger-windows"] = combinedBeatrice;
   return <Projects projects={projects} stars={stars} />;
 }
 

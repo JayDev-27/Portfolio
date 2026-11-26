@@ -161,7 +161,35 @@ async function getLiveContributions(): Promise<{ total: number; weeks: Contribut
     };
   }
 
-  // Tokenless fallback: public contributions mirror.
+  // Tokenless fallback 1: live GitHub profile contributions fragment (includes private contributions if enabled).
+  try {
+    const res = await fetch(`https://github.com/users/${LOGIN}/contributions`, { headers: { "User-Agent": "portfolio" } });
+    if (res.ok) {
+      const html = await res.text();
+      const totalMatch = html.match(/id="js-contribution-activity-description"[^>]*>\s*([\d,]+)/);
+      const tips = new Map<string, number>();
+      for (const m of html.matchAll(/for="(contribution-day-component-[^"]+)"[^>]*>([^<]+)</g)) {
+        const cm = m[2].match(/^(\d+)\s+contribution/);
+        tips.set(m[1], cm ? Number(cm[1]) : 0);
+      }
+      const days: ContributionDay[] = [];
+      for (const m of html.matchAll(/data-date="(\d{4}-\d{2}-\d{2})"[^>]*id="(contribution-day-component-[^"]+)"[^>]*data-level="(\d+)"/g)) {
+        days.push({ date: m[1], count: tips.get(m[2]) ?? 0, level: Number(m[3]) });
+      }
+      days.sort((a, b) => a.date.localeCompare(b.date));
+      if (days.length > 0) {
+        const weeks: ContributionDay[][] = [];
+        days.forEach((d, i) => {
+          if (i % 7 === 0) weeks.push([]);
+          weeks[weeks.length - 1].push(d);
+        });
+        const total = totalMatch ? Number(totalMatch[1].replace(/,/g, "")) : days.reduce((s, d) => s + d.count, 0);
+        return { total, weeks };
+      }
+    }
+  } catch {}
+
+  // Tokenless fallback 2: public contributions mirror.
   try {
     const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${LOGIN}?y=last`);
     if (!res.ok) return null;

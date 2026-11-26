@@ -38,6 +38,8 @@ export const profile = {
 export const mirrored = new Set([
   "Portfolio", "Frontend-Library", "Brawlverse", "Vantage", "Airshift", "OpenBot", "Jarvis",
   "RVC-Voicechanger", "Threejs-scroll-showcases", "Ai-atlas", "Canary", "threejs-library",
+  "Synthid-remover", "beatrice-voicechanger-windows", "beatrice-voicechanger-macos",
+  "Hikari", "ledgerlite", "Aurora-Voice", "Opencode-bridge", "innodata-task-factory",
 ]);
 
 export function repoUrl(repo: string): string | null {
@@ -63,14 +65,14 @@ export type Project = {
 export const projects: Project[] = [
   {
     repo: "Synthid-remover",
-    image: "/projects/Synthid-remover.jpg",
+    image: "/projects/Synthid-remover.png",
     name: "SynthID Remover",
     blurb: "Strips AI watermarks, C2PA Content Credentials and SynthID frequency signals — 100% on your machine.",
     category: "Security",
     stack: ["TypeScript", "Signal processing", "Local-first"],
   },
   {
-    repo: "Beatrice-voicechanger-windows",
+    repo: "beatrice-voicechanger-windows",
     image: "/projects/Beatrice-voicechanger-windows.jpg",
     name: "Project Beatrice",
     blurb: "Real-time AI voice changer: 112 voices, ~10 ms latency, fully on-device, for Windows and macOS.",
@@ -88,20 +90,12 @@ export const projects: Project[] = [
     live: "https://brawlverse.vercel.app",
   },
   {
-    repo: "Forge",
-    image: "/projects/Forge.jpg",
-    name: "Forge",
-    blurb: "A local-first AI IDE forked from VS Code. Works offline with Ollama, LM Studio and vLLM. Telemetry removed.",
-    category: "AI & Agents",
-    stack: ["TypeScript", "VS Code", "Ollama"],
-  },
-  {
-    repo: "Jarvis",
-    image: "/projects/Jarvis.jpg",
-    name: "Jarvis",
-    blurb: "A holographic Three.js assistant with voice cloning, TTS and real macOS system actions.",
-    category: "AI & Agents",
-    stack: ["Python", "Three.js", "TTS"],
+    repo: "Hikari",
+    image: "/projects/Hikari.png",
+    name: "Hikari",
+    blurb: "Local-first anime AI companion for macOS with Live2D/VRM, phoneme-accurate lip-sync and Mac automation.",
+    category: "Native & Desktop",
+    stack: ["Tauri", "TypeScript", "Rust", "Python"],
   },
   {
     repo: "Vantage",
@@ -113,6 +107,22 @@ export const projects: Project[] = [
     stack: ["TypeScript", "macOS", "Native"],
   },
   {
+    repo: "ledgerlite",
+    image: "/projects/ledgerlite.jpg",
+    name: "LedgerLite",
+    blurb: "Local-first personal finance manager with Three.js visuals, Firebase sync and offline PWA support.",
+    category: "Web & 3D",
+    stack: ["React 18", "TypeScript", "Three.js"],
+  },
+  {
+    repo: "Jarvis",
+    image: "/projects/Jarvis.jpg",
+    name: "Jarvis",
+    blurb: "A holographic Three.js assistant with voice cloning, TTS and real macOS system actions.",
+    category: "AI & Agents",
+    stack: ["Python", "Three.js", "TTS"],
+  },
+  {
     repo: "OpenBot",
     image: "/projects/OpenBot.jpg",
     video: "/projects/OpenBot.mp4",
@@ -120,14 +130,6 @@ export const projects: Project[] = [
     blurb: "Open-source AI teammates, each with its own sandboxed computer. Runs 100% locally with Ollama.",
     category: "AI & Agents",
     stack: ["Electron", "Ollama", "Agents"],
-  },
-  {
-    repo: "Wraith",
-    image: "/projects/Wraith.jpg",
-    name: "Wraith",
-    blurb: "A grounding-first AI reverse-engineering co-pilot for Ghidra and Cutter.",
-    category: "Security",
-    stack: ["Python", "Ghidra", "LLMs"],
   },
   {
     repo: "Frontend-Library",
